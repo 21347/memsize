@@ -480,6 +480,37 @@ begin
   end;
 end;
 
+{Read one word from the CMOS-RAM}
+{$IFDEF FPC}
+function ReadCMOSWord(addr:byte):word;
+var lo, hi:byte;
+begin
+  asm
+    push ax
+    mov al, addr
+    out 70h, al
+    in al, 71h
+    mov lo, al
+    mov al, addr+1
+    out 70h, al
+    in al, 71h
+    mov hi, al
+    pop ax
+  end;
+  ReadCMOSWord:=Word(lo) or (Word(hi) shl 8);
+end;
+{$ELSE}
+function ReadCMOSWord(addr:byte):word;
+var lo, hi:byte;
+begin
+  PORT[$70]:=addr;
+  lo:=PORT[$71];
+  PORT[$70]:=addr+1;
+  hi:=PORT[$71];
+  ReadCMOSWord:=Word(lo) or (Word(hi) shl 8);
+end;
+{$ENDIF}
+
 begin
   {Print greeting, copyright}
   PrintGreeting;
@@ -506,6 +537,16 @@ begin
         writeln(str_A20Success);
     end;
   end;
+
+  {Tell us what the BIOS thinks we have:}
+  Writeln('CMOS:');
+  Write('- Base memory: ');
+  Write(ReadCMOSWord($15)); Writeln(' KiB.');
+  Write('- XMS (configured): ');
+  Write(ReadCMOSWord($17)); Writeln(' KiB.');
+  Write('- XMS (discovered): ');
+  Write(ReadCMOSWord($30)); Writeln(' KiB.'); 
+  writeln;
 
   {Test memory!}
   writeln;
