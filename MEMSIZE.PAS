@@ -23,8 +23,9 @@
    http://www.rcollins.org/articles/loadall/tspec_a3_doc.html
 *)
 
-(* $G will generate 286 compatible code in TP7 *)
+(* $G will generate 286 compatible code in TP7, uncomment in FreePascal *)
 {$G+}
+
 program Memsize;
 
 uses Dos, Crt, Cpu286;
@@ -114,16 +115,35 @@ end;
 {Calculate the 32-Bit address from a real-mode address
  Input:  ES:SI - RealMode address
  Output: DX:AX - physical address}
+{$IFDEF FPC}
+(* Freepascal currently generates code for the 8086 only. This program contains
+only a few instructions that are not present int the 8086 family; to be precise: 
+8086 does not have the shl reg, imm instruction. *)
 procedure GetPhysicalAddress_ASM; assembler;
 asm
-  mov ax, es  {Auf Controll-Block zeigen}
+  push cx
+  mov cl, 4
+  mov ax, es  {Point to controll block}
   xor dh, dh
-  mov dl, ah  {HiByte der 32-Adresse}
-  shr dl, 4   {nur die oberen 4Bit verwenden}
-  shl ax, 4   {oberen 4bit vom Segment entfernen}
-  add ax, si  {GDT-Offset vom LoWord addieren}
-  adc dx, 0   {HiByte anpassen wenn Ueberlauf in Lo}
+  mov dl, ah  {HiByte of the 32-bit address}
+  shr dl, cl  {use only the higher 4 bits}
+  shl ax, cl  {remove the top 4bit of the segment}
+  add ax, si  {Add offset from LoWord}
+  adc dx, 0   {Adjust HiByte and move overflow to LoByte}
+  pop cx
 end;
+{$ELSE}
+procedure GetPhysicalAddress_ASM; assembler;
+asm
+  mov ax, es  {Point to controll block}
+  xor dh, dh
+  mov dl, ah  {HiByte of the 32-bit address}
+  shr dl, 4   {use only the higher 4 bits}
+  shl ax, 4   {remove the top 4bit of the segment}
+  add ax, si  {Add offset from LoWord}
+  adc dx, 0   {Adjust HiByte and move overflow to LoByte}
+end;
+{$ENDIF}
 
 (*{Wie oben, aber als "richtige" Pascal-Prozedur
  Eingang: rH:rL - Realmode
@@ -296,7 +316,11 @@ begin
     mov word ptr [LDAllParams.SS_Desc.Addr_A15_A00], ax
     mov byte ptr [LDAllParams.SS_Desc.Addr_A23_A16], dl
     {copy Machine Status Word}
+{$IFDEF FPC}
+    db 0Fh, 01h, 0E0h {smsw ax; smsw off course did not exist for the 8086 so the assembler will complain}
+{$ELSE}
     smsw ax
+{$ENDIF}
     mov word ptr [LDAllParams.MSW], ax
     {where to continue after LOADALL}
     mov word ptr [LDAllParams.IP], offset ZielLabel
@@ -334,6 +358,17 @@ ZielLabel:
     nop
     mov ax, $A55A
     xor si, si
+{$IFDEF FPC}
+    {Backup}
+    mov dx, word ptr ES:[SI]
+    {Write...}
+    mov word ptr ES:[SI], ax
+    nop
+    {Read}
+    mov ax, word ptr ES:[SI]
+    {Restore}
+    mov word ptr ES:[SI], dx
+{$ELSE}
     {Backup}
     mov dx, word ptr [ES:SI]
     {Write...}
@@ -343,6 +378,7 @@ ZielLabel:
     mov ax, word ptr [ES:SI]
     {Restore}
     mov word ptr [ES:SI], dx
+{$ENDIF}
 
     mov [status], ax {=$A55A if successfull}
     {Restore some registeres...}
