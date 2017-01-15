@@ -25,12 +25,12 @@ Parameters are as follows:
    /?, /Help : Show this little info
 ```
 
-When executing in a [https://pcem-emulator.co.uk/](PCem) emulated Ami 286 system, it might look like this:
+When executing in a [PCem](https://pcem-emulator.co.uk/) emulated Ami 286 system, it might look like this:
 
 ## Development setup
 
 ### FreePascal 3.0
-Take a look on the [http://wiki.freepascal.org/DOS](FreePascal Wiki) to learn how to install a MS-DOS crosscompiler for FreePascal. It works pretty well, however it generates only 8086 code. This does not hurt, except for the 80286 specific stuff (like the Mashine Status Word for example, or "SHL reg, imm8" for logical shifts). Those instructions have been framed in FPC-specific IFDEFs. To compile MEMSIZE, you may use something like this:
+Take a look on the [FreePascal Wiki](http://wiki.freepascal.org/DOS) to learn how to install a MS-DOS crosscompiler for FreePascal. It works pretty well, however it generates only 8086 code. This does not hurt, except for the 80286 specific stuff (like the Mashine Status Word for example, or "SHL reg, imm8" for logical shifts). Those instructions have been framed in FPC-specific IFDEFs. To compile MEMSIZE, you may use something like this:
 
 ```sh
 ppcross8086 -WmTiny -Wtcom MEMSIZE.PAS
@@ -62,7 +62,7 @@ Currently, "MSLANGDE.PAS" and "MSLANGEN.PAS" for German and English are availabl
 
 ## Foreign code
 
-Parts of this software (as noted in the sources) is based in Rober R. Collin's exccelent LOADALL code for the 80286 processor, see [http://www.rcollins.org/articles/loadall/tspec_a3_doc.html](his page about the LOADALL-instruction) for details.
+Parts of this software (as noted in the sources) is based in Rober R. Collin's exccelent LOADALL code for the 80286 processor, see [his page about the LOADALL-instruction](http://www.rcollins.org/articles/loadall/tspec_a3_doc.html) for details.
 
 ## Meta
 
