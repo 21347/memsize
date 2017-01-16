@@ -21,8 +21,8 @@ const
   {Strings for the main program}
   str_NameAndVersion = 'Real-Mode-16MB-Tester v0.2';
   str_A20NotChanged = 'A20 line will not be changed.';
-  str_A20Success = 'Gate A20 was change successfuly.';
-  str_A20Error = 'Gate A20 cound not be changed.';
+  str_A20Success = 'Gate A20 was changed successfully.';
+  str_A20Error = 'Gate A20 could  not be changed.';
   str_A20DisableError = 'Gate A20 could not be deactivated.';
   str_A20DisableSuccess = 'Gate A20 was deactivated.';
   str_BlocksOver1MB = 'Available blocks above 1MB: ';
@@ -46,6 +46,9 @@ const
   str_SwitchDump = '/DUMP';
   str_SwitchHalt = '/HALT';
   str_SwitchHelp = '/HELP';
+  
+  {Other stuff}
+  str_Copy = '(C)';
 
 procedure PrintGreeting;
 begin

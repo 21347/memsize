@@ -26,6 +26,7 @@
 (* $G will generate 286 compatible code in TP7, uncomment in FreePascal *)
 {$G+}
 
+
 program Memsize;
 
 uses Dos, Crt, Cpu286;
@@ -88,7 +89,7 @@ var
   conf_16M:boolean;
 
 {Localization:}
-{$I MSLANGDE.PAS}
+{$I MSLANGEN.PAS}
 
 {Convert Integer to it's hexadecimal representation}
 function IntToHex(n: LongInt; digits: Integer): string;
@@ -122,6 +123,7 @@ only a few instructions that are not present int the 8086 family; to be precise:
 procedure GetPhysicalAddress_ASM; assembler;
 asm
   push cx
+  xor cx, cx
   mov cl, 4
   mov ax, es  {Point to controll block}
   xor dh, dh
@@ -144,52 +146,6 @@ asm
   adc dx, 0   {Adjust HiByte and move overflow to LoByte}
 end;
 {$ENDIF}
-
-(*{Wie oben, aber als "richtige" Pascal-Prozedur
- Eingang: rH:rL - Realmode
- Ausgang: pH:pL - 32Bit Linear}
-procedure GetPhysicalAddress(rH,rL:word; var pH,pL:word);
-begin
-  asm
-    push es
-    push si
-    push dx
-    push ax
-    mov es, rH
-    mov si, rL
-    call GetPhysicalAddress_ASM
-    mov word ptr [pH], DX
-    mov word ptr [pL], AX
-    pop ax
-    pop dx
-    pop si
-    pop es
-  end;
-end;
-
-procedure CopyStruct; assembler;
-asm
-  push ax
-  push es
-  push si
-  push di
-  push ds
-  mov ax, $0080
-  mov ds, ax
-  mov si, 0
-  pop es
-  push es
-  mov si, offset LDAllSave
-  push cx
-  mov cx, LDAllSize
-  repnz movsb
-  pop cx
-  pop ds
-  pop di
-  pop si
-  pop es
-  pop ax
-end;*)
 
 {Dump contents of the parameters prepared to be sent to LOADALL}
 procedure PrintParams;
@@ -483,21 +439,27 @@ end;
 {Read one word from the CMOS-RAM}
 {$IFDEF FPC}
 function ReadCMOSWord(addr:byte):word;
-var lo, hi:byte;
+var res:word;
 begin
   asm
     push ax
+    push cx
+    xor ax, ax
+    xor cx, cx
     mov al, addr
     out 70h, al
     in al, 71h
-    mov lo, al
-    mov al, addr+1
+    mov cl, al
+    mov al, addr
+    inc al
     out 70h, al
     in al, 71h
-    mov hi, al
+    mov ch, al
+    mov res, cx
+    pop cx
     pop ax
   end;
-  ReadCMOSWord:=Word(lo) or (Word(hi) shl 8);
+  ReadCMOSWord:=res; {Word(lo) or (Word(hi) shl 8);}
 end;
 {$ELSE}
 function ReadCMOSWord(addr:byte):word;
@@ -514,7 +476,7 @@ end;
 begin
   {Print greeting, copyright}
   PrintGreeting;
-  writeln('(GPLv3, ¸ 2017 Alexander J. L. Hofmann)');
+  writeln('(GPLv3, ',str_Copy,' 2017 Alexander J. L. Hofmann)');
   {Parse params - will print the usage and exit if requested}
   ParseParams;
   Writeln;

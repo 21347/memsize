@@ -46,6 +46,9 @@ const
   str_SwitchDump = '/DUMP';
   str_SwitchHalt = '/HALT';
   str_SwitchHelp = '/HELP';
+  
+  {Other stuff}
+  str_Copy = '¸';
 
 procedure PrintGreeting;
 begin
