@@ -25,11 +25,13 @@ Parameters are as follows:
    /?, /Help : Show this little info
 ```
 
-When executing in a [PCem](https://pcem-emulator.co.uk/) emulated Ami 286 system, it might look like this:
+When executing in a [PCem](https://pcem-emulator.co.uk/) emulated Ami 286 system, it might look like this: [PCem-AMI286.png]
 
 ## Development setup
 
 ### FreePascal 3.0
+Note: up to now, the program can be compiled, but not executed.
+
 Take a look on the [FreePascal Wiki](http://wiki.freepascal.org/DOS) to learn how to install a MS-DOS crosscompiler for FreePascal. It works pretty well, however it generates only 8086 code. This does not hurt, except for the 80286 specific stuff (like the Mashine Status Word for example, or "SHL reg, imm8" for logical shifts). Those instructions have been framed in FPC-specific IFDEFs. To compile MEMSIZE, you may use something like this:
 
 ```sh
@@ -54,7 +56,7 @@ Currently, "MSLANGDE.PAS" and "MSLANGEN.PAS" for German and English are availabl
 
 * 0.2.0
     * FIX: should not work on all IBM286 compatibles now
-    * CHANGE: FreePascal can now be used to compile the sources for DOS
+    * CHANGE: FreePascal can now be used to compile the sources for DOS, the program itself however does not work by now
 * 0.1.0
     * changed to real-mode and LOADALL, using TP7
 * 0.0.1
