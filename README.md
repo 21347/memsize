@@ -25,7 +25,8 @@ Parameters are as follows:
    /?, /Help : Show this little info
 ```
 
-When executing in a [PCem](https://pcem-emulator.co.uk/) emulated Ami 286 system, it might look like this: [PCem Screenshot](PCem-AMI286.png?raw=true)
+When executing in a [PCem](https://pcem-emulator.co.uk/) emulated Ami 286 system, it might look like this:
+![PCem Screenshot](PCem-AMI286.png?raw=true)
 
 ## Development setup
 
